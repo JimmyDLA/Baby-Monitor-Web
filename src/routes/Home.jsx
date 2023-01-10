@@ -20,20 +20,21 @@ const styles = {
   }
 };
 export const Home = () => {
+  setTimeout(() => console.log('home timeout'), 5000)
   return (
     <div style={styles.container} >
       <h1>Baby Monitor</h1>
       <div style={styles.buttonContainer}>
-        <Link style={{ textDecoration: 'none' }} to={'create-freq'}>
+        <a href='/create-freq' style={{ textDecoration: 'none' }}>
           <Button style={styles.button} variant="contained">
             Create Frequency
           </Button>
-        </Link>
-        <Link style={{ textDecoration: 'none' }} to={'join-freq'}>
-          <Button style={styles.button} variant="outlined">
+        </a>
+        <a style={{ textDecoration: 'none' }} href={'enter-freq'}>
+          <Button style={styles.button} variant="\outlined">
             Join Frequency
           </Button>
-        </Link>
+        </a>
       </div>
     </div>
   )
