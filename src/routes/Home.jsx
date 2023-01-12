@@ -1,6 +1,5 @@
-import logo from '../logo.svg';
+import React, { useRef, useState, useEffect } from "react";
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -19,8 +18,12 @@ const styles = {
     margin: 30
   }
 };
+
 export const Home = () => {
-  setTimeout(() => console.log('home timeout'), 5000)
+  useEffect(() => {
+    console.log('[INFO] home useEffect')
+  }, [])
+
   return (
     <div style={styles.container} >
       <h1>Baby Monitor</h1>

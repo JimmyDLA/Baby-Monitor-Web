@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { QrReader } from 'react-qr-reader';
 import { Button, TextField } from '@mui/material';
-import { useNavigate, Link } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -25,17 +24,13 @@ const styles = {
   }
 };
 
-
-
 export const EnterFreq = () => {
   const videoRef = useRef(null);
   const gotRes = useRef(false)
 
-  const navigate = useNavigate();
-
   const [data, setData] = useState('No result');
+  const [input, setInput] = useState('');
   const [isCamScanning, setIsCamScanning] = useState(true);
-  // const [gotRes, setGotRes] = useState(false);
 
   useEffect(() => {
     if (isCamScanning) {
@@ -43,9 +38,6 @@ export const EnterFreq = () => {
     }
     return () => console.log('unmount')
   }, [isCamScanning])
-
-
-
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -69,7 +61,7 @@ export const EnterFreq = () => {
       if (!!result) {
         setData(result?.text);
         gotRes.current = true
-        window.location.replace('join-freq')
+        window.location.replace(`join-freq/${result.text}`)
 
       }
       if (!!error) {
@@ -78,11 +70,10 @@ export const EnterFreq = () => {
     }
   }
 
-  // const handleJoin = () => {
-  //   console.log('join')
-  //   window.location.replace('join-freq')
-  //   // window.history.pushState({}, "", "join-freq");
-  // }
+  const handleInput = e => {
+    console.log(e.target.value)
+    setInput(e.target.value)
+  }
 
   return isCamScanning ? (
     <div style={styles.container} >
@@ -104,8 +95,8 @@ export const EnterFreq = () => {
       <Button style={styles.button} variant='outlined' onClick={handleCamToggle}>
         Scan Frequency
       </Button>
-      <TextField id="frequency-id" label="frequency" style={styles.input} variant="outlined" />
-      <a style={{ textDecoration: 'none' }} href={'join-freq'}>
+      <TextField id="frequency-id" label="frequency" style={styles.input} variant="outlined" onChange={handleInput} />
+      <a style={{ textDecoration: 'none' }} href={`join-freq/${input}`}>
         <Button style={styles.button} variant='contained'>
           Join Frequency
         </Button>

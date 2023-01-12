@@ -1,3 +1,4 @@
+import React from 'react'
 import { Home } from './routes/Home'
 import { CreateFreq } from './routes/CreateFreq'
 import { EnterFreq } from './routes/EnterFreq'
@@ -6,8 +7,6 @@ import './App.css';
 import {
   createBrowserRouter,
   RouterProvider,
-  Routes,
-  Route,
 } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -20,7 +19,7 @@ const router = createBrowserRouter([
     element: <CreateFreq />
   },
   {
-    path: "join-freq",
+    path: "join-freq/:room",
     element: <JoinFreq />
   },
   {
@@ -31,14 +30,6 @@ const router = createBrowserRouter([
 function App() {
   return (
     <RouterProvider router={router} />
-    // <Router>
-    //   <Routes>
-    //     <Route path="/" element={<Home />} />
-    //     <Route path="create-freq" element={<CreateFreq />} />
-    //     <Route path="join-freq" element={<JoinFreq />} />
-    //     <Route path="enter-freq" element={<EnterFreq />} />
-    //   </Routes>
-    // </Router>
   );
 }
 
