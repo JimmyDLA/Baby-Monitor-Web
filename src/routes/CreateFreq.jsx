@@ -219,7 +219,7 @@ export const CreateFreq = () => {
   }
 
   async function handleOnAndOffCamera() {
-    console.log('[INFO] createFreq handleOnAndOffCamera')
+    console.log('[INFO] createFreq handleOnAndOffCamera', !isVoiceOnly)
     let videoTrack = await mediaRef.current.getVideoTracks()[0]
     videoTrack.enabled = !isVoiceOnly
     setIsVoiceOnly(!isVoiceOnly)
@@ -257,6 +257,7 @@ export const CreateFreq = () => {
   return !localMediaStream ? (
     <div style={styles.container} >
       <h1>Create Frequency</h1>
+      <h1>Baby Room</h1>
       <h4>Scan QR code to join frequency</h4>
       <QRCode size={200} value={room} />
       <h4>OR</h4>
@@ -265,6 +266,8 @@ export const CreateFreq = () => {
     </div>
   ) : (
     <div style={styles.container}>
+      <h1>Create Frequency</h1>
+      <h1>Baby Room</h1>
       <h1>We're LIVE</h1>
     </div>
 

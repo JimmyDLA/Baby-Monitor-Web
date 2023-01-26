@@ -13,27 +13,6 @@ const mediaConstraints = {
   },
 }
 
-const styles = {
-  container: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column'
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  button: {
-    margin: 30
-  },
-  video: {
-    width: 400
-
-  },
-};
 export const JoinFreq = () => {
   const { room = 'dsjfklasdj' } = useParams();
   console.log('[INFO] JoinFreq room:', room)
@@ -42,9 +21,12 @@ export const JoinFreq = () => {
   const otherUser = useRef()
   const sendChannel = useRef() // Data channel
   const videoRef = useRef(null);
+  const isVoiceOnly = useRef(false)
+  const remoteMediaStream = useRef()
 
-  const [remoteMediaStream, setRemoteMediaStream] = useState(null)
-  const [isVoiceOnly, setIsVoiceOnly] = useState(false)
+
+  // const [remoteMediaStream, setRemoteMediaStream] = useState(null)
+  // const [isVoiceOnly, setIsVoiceOnly] = useState(false)
 
   useEffect(() => {
     console.log('[INFO] JoinFreq useEffect', room)
@@ -75,6 +57,9 @@ export const JoinFreq = () => {
     socketRef.current.on('ice-candidate', handleNewICECandidateMsg)
 
     socketRef.current.on('end', handleEnd)
+
+    socketRef.current.on('toggle-audio', handleOnAndOffCamera)
+
   }, [])
 
   const getMedia = async () => {
@@ -125,6 +110,7 @@ export const JoinFreq = () => {
 
   const handleAddStream = (event) => {
     console.log('[INFO] JoinFreq onaddstream', { event })
+    remoteMediaStream.current = event.stream
     const video = videoRef.current
     video.srcObject = event.stream
     video.addEventListener('loadedmetadata', () => video.play())
@@ -225,7 +211,7 @@ export const JoinFreq = () => {
 
   const handleEnd = () => {
     console.log('[INFO] JoinFreq end')
-    setRemoteMediaStream(null)
+    remoteMediaStream.current = null
     peerRef.current.close()
     window.location.replace('/')
   }
@@ -238,20 +224,71 @@ export const JoinFreq = () => {
     peerRef.current.addIceCandidate(candidate).catch(e => console.log(e))
   }
 
+  const handleOnAndOffCamera = () => {
+    console.log('handleOnAndOffCamera', isVoiceOnly.current)
+    console.log('handleOnAndOffCamera', remoteMediaStream.current)
+    if (isVoiceOnly.current) {
+      console.log(videoRef.current.style.width)
+      videoRef.current.style.width = 0
+    } else {
+      // console.log({ remoteMediaStream })
+      videoRef.current.srcObject = remoteMediaStream.current
+      videoRef.current.style.width = '400px'
+    }
+  }
+
+  const emitSwitchCamera = () => {
+    socketRef.current.emit('switch-camera')
+  }
+
   const handleEmitEnd = () => {
     socketRef.current.emit('end')
   }
 
-  return remoteMediaStream ? (
-    <div style={styles.container}>
-    </div>
-  ) : (
+  const emitToggleAudio = () => {
+    console.log('emitToggleAudio', isVoiceOnly.current)
+    isVoiceOnly.current = !isVoiceOnly.current
+    socketRef.current.emit('toggle-audio')
+  }
+
+  return (
     <div style={styles.container} >
       <h1>Join Frequency</h1>
+      <h1>Parent Room</h1>
       <video style={styles.video} ref={videoRef} />
-      <Button variant='contained' onClick={handleEmitEnd}>
-        End Call
-      </Button>
+      <div style={styles.buttonContainer}>
+        <Button style={styles.button} variant='contained' onClick={emitToggleAudio}>
+          Audio Only
+        </Button>
+        <Button style={styles.button} variant='contained' color="error" onClick={handleEmitEnd}>
+          End Call
+        </Button>
+        <Button style={styles.button} variant='contained' onClick={emitSwitchCamera}>
+          Switch Camera
+        </Button>
+      </div>
+
     </div>
   )
 }
+
+const styles = {
+  container: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column'
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  button: {
+    margin: 30
+  },
+  video: {
+    width: 400
+  },
+};
