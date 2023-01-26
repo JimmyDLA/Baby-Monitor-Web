@@ -40,8 +40,19 @@ export const EnterFreq = () => {
   }, [isCamScanning])
 
   const getVideo = () => {
+    const constraints = {
+      audio: false,
+      video: {
+        facingMode: 'user',
+        width: 400
+      }
+    }
+    navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+      let video = videoRef.current;
+      video.srcObject = stream;
+    });
     navigator.mediaDevices
-      .getUserMedia({ video: { width: 400 } })
+      .getUserMedia(constraints)
       .then(stream => {
         let video = videoRef.current;
         video.srcObject = stream;
