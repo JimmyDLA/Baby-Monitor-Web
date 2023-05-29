@@ -108,12 +108,29 @@ export const JoinFreq = () => {
     getMedia()
   }
 
-  const handleAddStream = (event) => {
-    console.log('[INFO] JoinFreq onaddstream', { event })
+  const handleAddStream = async (event) => {
+
     remoteMediaStream.current = event.stream
     const video = videoRef.current
     video.srcObject = event.stream
+
     video.addEventListener('loadedmetadata', () => video.play())
+    video.addEventListener('timeupdate', async () => {
+      const sender = peerRef.current.getReceivers()[0]
+      const stats = await sender.getStats()
+      const result = stats.values()
+
+      for (let value of result) {
+        if (value.audioLevel) {
+          console.log('[INFO] JoinFreq Audio Level')
+          console.log(value.audioLevel);
+        }
+        // console.log(value)
+        // console.log(value?.audioLevel);
+        // console.log(value?.totalAudioEnergy);
+
+      }
+    })
   }
 
   const handleNegotiationNeededEvent = (userID) => {
@@ -144,7 +161,7 @@ export const JoinFreq = () => {
   }
 
   const handleTrackEvnet = (e) => {
-    console.log('[INFO] JoinFreq Track received from peer', e)
+    console.log('[INFO] JoinFreq Track received from peer', e.__proto__.track)
   }
 
   function handleOffer(incoming) {
