@@ -14,7 +14,7 @@ const mediaConstraints = {
 }
 
 export const JoinFreq = () => {
-  const { room = 'dsjfklasdj' } = useParams();
+  const { room } = useParams();
   console.log('[INFO] JoinFreq room:', room)
   const peerRef = useRef()
   const socketRef = useRef()
@@ -22,15 +22,24 @@ export const JoinFreq = () => {
   const sendChannel = useRef() // Data channel
   const videoRef = useRef(null);
   const isVoiceOnly = useRef(false)
-  const remoteMediaStream = useRef()
+  const remoteStream = useRef(null)
 
 
-  // const [remoteMediaStream, setRemoteMediaStream] = useState(null)
+  const [remoteMediaStream, setRemoteMediaStream] = useState(null)
   // const [isVoiceOnly, setIsVoiceOnly] = useState(false)
 
   useEffect(() => {
     console.log('[INFO] JoinFreq useEffect', room)
     socketRef.current = io.connect(URL)
+    setTimeout(() => {
+      console.log('TIMEDOUT: checking remote stream, ', remoteMediaStream)
+      if (!remoteStream.current) {
+        // window.location.replace(`enter-freq`)
+        window.history.back()
+        alert('TIMEDOUT: Can not connect to baby room. Please try again.')
+
+      }
+    }, 10000);
 
     // ====================== 1. Emit joining roomID to server ======================
     socketRef.current.emit('join-freq', room)
@@ -109,8 +118,9 @@ export const JoinFreq = () => {
   }
 
   const handleAddStream = async (event) => {
-
-    remoteMediaStream.current = event.stream
+    console.log('[Join] handleAddStream', { event })
+    remoteStream.current = event.stream
+    setRemoteMediaStream(event.stream)
     const video = videoRef.current
     video.srcObject = event.stream
 
@@ -161,7 +171,7 @@ export const JoinFreq = () => {
   }
 
   const handleTrackEvnet = (e) => {
-    console.log('[INFO] JoinFreq Track received from peer', e.__proto__.track)
+    console.log('[INFO] JoinFreq Track received from peer', e)
   }
 
   function handleOffer(incoming) {
@@ -228,7 +238,7 @@ export const JoinFreq = () => {
 
   const handleEnd = () => {
     console.log('[INFO] JoinFreq end')
-    remoteMediaStream.current = null
+    setRemoteMediaStream(null)
     peerRef.current.close()
     window.location.replace('/')
   }
@@ -242,15 +252,14 @@ export const JoinFreq = () => {
   }
 
   const handleOnAndOffCamera = () => {
-    console.log('handleOnAndOffCamera', isVoiceOnly.current)
-    console.log('handleOnAndOffCamera', remoteMediaStream.current)
+    console.log('[handleOnAndOffCamera] isVoiceOnly: ', isVoiceOnly.current)
+    console.log('[handleOnAndOffCamera] remoteMediaStream: ', remoteMediaStream)
     if (isVoiceOnly.current) {
       console.log(videoRef.current.style.width)
-      videoRef.current.style.width = 0
+      videoRef.current.style.display = 'none'
     } else {
-      // console.log({ remoteMediaStream })
-      videoRef.current.srcObject = remoteMediaStream.current
-      videoRef.current.style.width = '400px'
+      videoRef.current.style.display = 'block'
+      // videoRef.current.srcObject = remoteMediaStream
     }
   }
 
@@ -269,21 +278,27 @@ export const JoinFreq = () => {
   }
 
   return (
-    <div style={styles.container} >
-      <h1>Join Frequency</h1>
-      <h1>Parent Room</h1>
+    <div style={styles.container}>
       <video style={styles.video} ref={videoRef} />
-      <div style={styles.buttonContainer}>
-        <Button style={styles.button} variant='contained' onClick={emitToggleAudio}>
-          Audio Only
-        </Button>
-        <Button style={styles.button} variant='contained' color="error" onClick={handleEmitEnd}>
-          End Call
-        </Button>
-        <Button style={styles.button} variant='contained' onClick={emitSwitchCamera}>
-          Switch Camera
-        </Button>
-      </div>
+      {remoteMediaStream ? (
+        <>
+          <h1>Join Frequency</h1>
+          <h1>Parent Room</h1>
+          <div style={styles.buttonContainer}>
+            <Button style={styles.button} variant='contained' onClick={emitToggleAudio}>
+              Audio Only
+            </Button>
+            <Button style={styles.button} variant='contained' color="error" onClick={handleEmitEnd}>
+              End Call
+            </Button>
+            <Button style={styles.button} variant='contained' onClick={emitSwitchCamera}>
+              Switch Camera
+            </Button>
+          </div>
+        </>
+      ) : (
+        <h1>Connecting...</h1>
+      )}
 
     </div>
   )
