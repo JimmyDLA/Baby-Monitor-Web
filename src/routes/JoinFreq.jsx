@@ -23,7 +23,7 @@ export const JoinFreq = () => {
   const videoRef = useRef(null);
   const isVoiceOnly = useRef(false)
   const remoteStream = useRef(null)
-
+  const parent = 'parent'
 
   const [remoteMediaStream, setRemoteMediaStream] = useState(null)
   // const [isVoiceOnly, setIsVoiceOnly] = useState(false)
@@ -42,7 +42,7 @@ export const JoinFreq = () => {
     }, 10000);
 
     // ====================== 1. Emit joining roomID to server ======================
-    socketRef.current.emit('join-freq', room)
+    socketRef.current.emit('join-freq', { parent, room })
 
     // ====================== 4. Add Listener for server if there is another user in room ======================
     socketRef.current.on('other-user', userID => {
@@ -268,7 +268,7 @@ export const JoinFreq = () => {
   }
 
   const handleEmitEnd = () => {
-    socketRef.current.emit('end')
+    socketRef.current.emit('end', room)
   }
 
   const emitToggleAudio = () => {
