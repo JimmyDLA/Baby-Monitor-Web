@@ -43,13 +43,13 @@ export const CreateFreq = () => {
 
   const [localMediaStream, setLocalMediaStream] = useState(null)
   const [isVoiceOnly, setIsVoiceOnly] = useState(false)
-
+  const baby = 'baby'
   useEffect(() => {
     console.log('[INFO] createFreq useEffect')
 
     socketRef.current = io.connect(URL)
 
-    socketRef.current.emit('join-freq', room) // Room ID
+    socketRef.current.emit('join-freq', { baby, room }) // Room ID
 
     socketRef.current.on('other-user', userID => {
       console.log('[INFO] createFreq other-user: ', userID)
@@ -68,7 +68,7 @@ export const CreateFreq = () => {
     socketRef.current.on('switch-camera', handleSwitch)
     socketRef.current.on('toggle-audio', handleOnAndOffCamera)
     socketRef.current.on('ice-candidate', handleNewICECandidateMsg)
-  })
+  }, [])
 
   const getMedia = async () => {
     let voiceOnly = false
