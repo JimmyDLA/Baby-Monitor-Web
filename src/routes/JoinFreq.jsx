@@ -272,6 +272,7 @@ export const JoinFreq = () => {
 
   const handleEmitEnd = () => {
     socketRef.current.emit('end', room)
+    handleEnd()
   }
 
   const emitToggleAudio = () => {
