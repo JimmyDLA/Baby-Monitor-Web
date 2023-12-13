@@ -1,8 +1,8 @@
 import React from 'react'
-import { Home } from './routes/Home'
-import { CreateFreq } from './routes/CreateFreq'
-import { EnterFreq } from './routes/EnterFreq'
-import { JoinFreq } from './routes/JoinFreq'
+import { Home } from './Routes/Home'
+import { CreateFreq } from './Routes/CreateFreq'
+import { EnterFreq } from './Routes/EnterFreq'
+import { JoinFreq } from './Routes/JoinFreq'
 import './App.css';
 import {
   createBrowserRouter,
@@ -27,6 +27,7 @@ const router = createBrowserRouter([
     element: <EnterFreq />
   }
 ])
+
 function App() {
   return (
     <RouterProvider router={router} />

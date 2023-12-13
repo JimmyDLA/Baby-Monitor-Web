@@ -1,7 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react'
-import Button from '@mui/material/Button';
 import io from 'socket.io-client'
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom"
+import { Container, Button } from '../Components'
+import endCall from '../Assests/End_call_icon.png'
+import audioSwitch from '../Assests/Camera_off_icon.png'
+import switchCam from '../Assests/Switch_cam_icon.png'
+
 const URL = process.env.REACT_APP_SERVER
 const mediaConstraints = {
   // don't know if noise suppression actually work as is
@@ -20,7 +24,7 @@ export const JoinFreq = () => {
   const socketRef = useRef()
   const otherUser = useRef()
   const sendChannel = useRef() // Data channel
-  const videoRef = useRef(null);
+  const videoRef = useRef(null)
   const isVoiceOnly = useRef(false)
   const remoteStream = useRef(null)
   const parent = 'parent'
@@ -132,8 +136,8 @@ export const JoinFreq = () => {
 
       for (let value of result) {
         if (value.audioLevel) {
-          console.log('[INFO] JoinFreq Audio Level')
-          console.log(value.audioLevel);
+          // console.log('[INFO] JoinFreq Audio Level')
+          // console.log(value.audioLevel);
         }
         // console.log(value)
         // console.log(value?.audioLevel);
@@ -259,7 +263,6 @@ export const JoinFreq = () => {
       videoRef.current.style.display = 'none'
     } else {
       videoRef.current.style.display = 'block'
-      // videoRef.current.srcObject = remoteMediaStream
     }
   }
 
@@ -278,39 +281,27 @@ export const JoinFreq = () => {
   }
 
   return (
-    <div style={styles.container}>
+    <Container style={styles.container} >
+      <h1>Parent Room</h1>
       <video style={styles.video} ref={videoRef} />
       {remoteMediaStream ? (
         <>
-          <h1>Join Frequency</h1>
-          <h1>Parent Room</h1>
           <div style={styles.buttonContainer}>
-            <Button style={styles.button} variant='contained' onClick={emitToggleAudio}>
-              Audio Only
-            </Button>
-            <Button style={styles.button} variant='contained' color="error" onClick={handleEmitEnd}>
-              End Call
-            </Button>
-            <Button style={styles.button} variant='contained' onClick={emitSwitchCamera}>
-              Switch Camera
-            </Button>
+            <Button primary icon={audioSwitch} onClick={emitToggleAudio} />
+            <Button secondary icon={endCall} onClick={handleEmitEnd} />
+            <Button primary icon={switchCam} onClick={emitSwitchCamera} />
           </div>
         </>
       ) : (
         <h1>Connecting...</h1>
       )}
-
-    </div>
+    </Container>
   )
 }
 
 const styles = {
   container: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column'
+    paddingTop: 0,
   },
   buttonContainer: {
     display: 'flex',

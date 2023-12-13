@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { v4 as uuidV4 } from 'uuid'
 import io from 'socket.io-client'
-import Button from '@mui/material/Button';
+import { Container } from "../Components";
 
 
 const URL = process.env.REACT_APP_SERVER
@@ -15,23 +15,6 @@ const mediaConstraints = {
     facingMode: 'user',
   },
 }
-const styles = {
-  container: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column'
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  button: {
-    margin: 30
-  }
-};
 
 export const CreateFreq = () => {
   const room = uuidV4()
@@ -255,21 +238,18 @@ export const CreateFreq = () => {
   }
 
   return !localMediaStream ? (
-    <div style={styles.container} >
-      <h1>Create Frequency</h1>
-      <h1>Baby Room</h1>
-      <h4>Scan QR code to join frequency</h4>
+    <Container>
+      <h1>Scan QR code to join frequency</h1>
       <QRCode size={200} value={room} />
-      <h4>OR</h4>
-      <h4>Type frequncy ID to join:</h4>
-      <h4>{room}</h4>
-    </div>
+      <h2>OR</h2>
+      <h2>Type frequncy ID to join:</h2>
+      <h2>{room}</h2>
+    </Container>
   ) : (
-    <div style={styles.container}>
-      <h1>Create Frequency</h1>
+    <Container>
       <h1>Baby Room</h1>
       <h1>We're LIVE</h1>
-    </div>
+    </Container>
 
   )
 }
