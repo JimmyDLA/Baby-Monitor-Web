@@ -265,10 +265,11 @@ export const JoinFreq = () => {
       for (let value of stats) {
         if (value[1].audioLevel) {
           console.log('[INFO] JoinFreq Stats value', value[1].audioLevel)
-          setVolume(value[1].audioLevel * 15)
+          const vol = value[1].audioLevel * 50;
+          setVolume(vol < 2 ? 2 : vol)
         }
       }
-    }, 100)
+    }, 250)
   }
 
   const clearAudioInterval = () => {
@@ -336,11 +337,12 @@ const styles = {
     alignItems: 'center',
   },
   volumeMeter: {
-    width: Size.large,
-    height: Size.large,
+    width: Size.xsmall,
+    height: Size.xsmall,
     backgroundColor: Color.darkGreen,
     borderRadius: Size.xxxlarge,
-    margin: 100,
+    marginTop: 200,
+    marginBottom: 200,
   },
   button: {
     margin: 30
