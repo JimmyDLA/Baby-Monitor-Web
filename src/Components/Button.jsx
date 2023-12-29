@@ -7,7 +7,7 @@ export const Button = ({ onClick, route, primary, text, secondary, icon }) => {
     borderRadius: Size.xxlarge,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 400,
+    width: 300,
     height: Size.xxxxlarge,
     backgroundColor: primary ? Color.primary : Color.secondary,
     border: 0,

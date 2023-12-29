@@ -5,6 +5,8 @@ import { Container, Button } from '../Components'
 import endCall from '../Assests/End_call_icon.png'
 import audioSwitch from '../Assests/Camera_off_icon.png'
 import switchCam from '../Assests/Switch_cam_icon.png'
+import { Size, Color } from '../Theme/Theme'
+
 
 const URL = process.env.REACT_APP_SERVER
 const mediaConstraints = {
@@ -25,12 +27,13 @@ export const JoinFreq = () => {
   const otherUser = useRef()
   const sendChannel = useRef() // Data channel
   const videoRef = useRef(null)
+  const audioInterval = useRef()
   const isVoiceOnly = useRef(false)
   const remoteStream = useRef(null)
   const parent = 'parent'
 
   const [remoteMediaStream, setRemoteMediaStream] = useState(null)
-  // const [isVoiceOnly, setIsVoiceOnly] = useState(false)
+  const [volume, setVolume] = useState(0)
 
   useEffect(() => {
     console.log('[INFO] JoinFreq useEffect', room)
@@ -255,14 +258,33 @@ export const JoinFreq = () => {
     peerRef.current.addIceCandidate(candidate).catch(e => console.log(e))
   }
 
+  const setAudioInterval = () => {
+    // console.log('[INFO] JoinFreq setAudioInterval')
+    audioInterval.current = setInterval(async () => {
+      const stats = await peerRef.current.getStats()
+      for (let value of stats) {
+        if (value[1].audioLevel) {
+          console.log('[INFO] JoinFreq Stats value', value[1].audioLevel)
+          setVolume(value[1].audioLevel * 15)
+        }
+      }
+    }, 100)
+  }
+
+  const clearAudioInterval = () => {
+    // console.log('[INFO] JoinFreq clearAudioInterval')
+    clearInterval(audioInterval.current)
+  }
+
   const handleOnAndOffCamera = () => {
     console.log('[handleOnAndOffCamera] isVoiceOnly: ', isVoiceOnly.current)
     console.log('[handleOnAndOffCamera] remoteMediaStream: ', remoteMediaStream)
     if (isVoiceOnly.current) {
-      console.log(videoRef.current.style.width)
       videoRef.current.style.display = 'none'
+      setAudioInterval()
     } else {
       videoRef.current.style.display = 'block'
+      clearAudioInterval()
     }
   }
 
@@ -281,11 +303,17 @@ export const JoinFreq = () => {
     socketRef.current.emit('toggle-audio')
   }
 
+  console.log('isVoiceOnly: ', isVoiceOnly.current)
   return (
     <Container style={styles.container} >
       <h1>Parent Room</h1>
       <video style={styles.video} ref={videoRef} />
-      {remoteMediaStream ? (
+      {isVoiceOnly.current && (
+        <div style={{ ...styles.volumeMeter, ...{ transform: `scale(${volume}, ${volume})` } }} />
+      )}
+      {!remoteMediaStream ? (
+        <h1>Connecting...</h1>
+      ) : (
         <>
           <div style={styles.buttonContainer}>
             <Button primary icon={audioSwitch} onClick={emitToggleAudio} />
@@ -293,8 +321,6 @@ export const JoinFreq = () => {
             <Button primary icon={switchCam} onClick={emitSwitchCamera} />
           </div>
         </>
-      ) : (
-        <h1>Connecting...</h1>
       )}
     </Container>
   )
@@ -308,6 +334,13 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  volumeMeter: {
+    width: Size.large,
+    height: Size.large,
+    backgroundColor: Color.darkGreen,
+    borderRadius: Size.xxxlarge,
+    margin: 100,
   },
   button: {
     margin: 30
